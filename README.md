@@ -362,7 +362,7 @@ to see that it can't be contravariant. For otherwise, clients would be
 allowed to do the following:
 
 ```scala
-val q: Queue[Any] = Queue[Any](1) // OK because Int <: Any
+val q: Queue[Any] = Queue[Any](1) // OK because 1: Int and Int <: Any
 val qs: Queue[String] = q // OK because String <: Any and Queue is
                           // supposedly contravariant, i.e. Queue[Any] <: Queue[String]
 
@@ -374,8 +374,8 @@ As pointed out in the comments, this code would be considered
 well-typed by the compiler. However, at run-time when the last line is
 executed we would attempt to call `charAt`, a method of class
 `String`, on an `Int` value. Since there is no such method on `Int`
-the subsequent behavior of the program would be undefined. When we
-would execute the usual instructions for a vtable look-up, in the best
+the subsequent behavior of the program would be undefined. If we
+executed the usual instructions for a vtable look-up, in the best
 case, we would jump to a completely different method that happens to
 have its pointer stored in the same vtable slot as `charAt` in
 `String`'s vtable and then start executing that method. In the worst
