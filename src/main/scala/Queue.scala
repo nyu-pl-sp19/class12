@@ -1,4 +1,4 @@
-class Queue[+A] (private[this] val queue: List[A]) {
+class Queue[@specialized(Int) +A] (private[this] val queue: List[A]) {
   
   def enqueue[B >: A](x: B): Queue[B] = {
     new Queue[B](queue :+ x)

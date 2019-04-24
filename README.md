@@ -79,7 +79,7 @@ Our queue data structure supports three operations:
 Remember that a functional queue data structure differs from a queue
 that is implemented in an imperative style in that the enqueue and
 dequeue operations do not mutate the state of the queue object
-in-place, but instead return new queue objects that capture the
+in-place. Instead, they return new queue objects that capture the
 updated state of the queue after the operation has been performed. The
 state of the original queue object remains unchanged. Such data
 structures are therefore also called *persistent*. This design choice
@@ -143,9 +143,9 @@ creates a new list by appending `x` at the end of the list `queue`,
 leaving `queue` itself unchanged. The implementation of `dequeue`
 first ensures that the queue is non-empty and then decomposes `queue`
 into its head `x` and tail `queue1` using pattern matching and then
-returns `x` and the new `Queue` instance holding `queue1`. The
-implementation of `isEmpty` simply delegates the emptiness check to
-the list `queue`.
+returns a pair consisting of `x` and the new `Queue` instance holding
+`queue1`. The implementation of `isEmpty` simply delegates the
+emptiness check to the list `queue`.
 
 The companion object then provides two factory methods for
 constructing queues to hide the queue's internal representation:
@@ -183,7 +183,7 @@ type. Only the instances `Queue[Int]`, `Queue[String]`, ... of
 `Queue[A]` obtained by instantiating the type parameter `A` with
 another type are themselves types. Instead, `Queue` is called a *type
 constructor*. This is different to generics in Java where a generic
-class `C[A]` gives rise to a type `C` that is referred to as a *raw
+class `C<A>` gives rise to a type `C` that is referred to as a *raw
 type*.
 
 ### Type Erasure and Specialization
@@ -228,13 +228,14 @@ allocated object as argument. However, `x` stores an `Int` value,
 which only takes 32 bits.
 
 To perform the type conversion, the compiler uses a technique called
-*auto boxing*. Before passing `x` to `enqueue`, the compiler generates
-auxiliary glue code that creates a new heap allocated object and
-stores the value of `x` in a field of that object. Instead of passing
-`x` directly to `enqueue`, it instead passes the pointer to the
-wrapper object. Similarly, when we call `q.dequeue`, there will be
-auxiliary glue code that retrieves the wrapper object from the queue
-and *unboxes* it by extracting the contained `Int` value. While these
+*auto boxing*. When a value `x` of type `Int` or some other non-object
+type is passed to `enqueue`, the compiler generates auxiliary glue
+code that creates a new heap allocated object and stores the value of
+`x` in a field of that object. Instead of passing `x` directly to
+`enqueue`, it instead passes the pointer to the wrapper
+object. Similarly, when we call `q.dequeue`, there will be auxiliary
+glue code that retrieves the wrapper object from the queue and
+*unboxes* it by extracting the contained `Int` value. While these
 conversions are opaque to the programmer, they incur a constant time
 and space overhead per conversion that you should be aware of.
 
@@ -319,9 +320,9 @@ parameter `A`. We distinguish three cases:
   is inverted by the instantiation of `C`.
 
 * `C[A]` is *invariant* in `A`: neither `C[S] <: C[T]` nor `C[T] <:
-  C[S]` holds in general if `S <: T`. That is, there is no subtype
-  relationship between the instantiations regardless of how `S` and
-  `T` are related.
+  C[S]` holds if `S <: T`. That is, there is no subtype relationship
+  between the instantiations regardless of how `S` and `T` are
+  related.
 
 Whether `C` is covariant, contravariant, or invariant in its type
 parameter `A` depends on the implementation details of `C`. Covariant
@@ -643,7 +644,7 @@ class. This is because only the current instance itself can interact
 with these members. However, when we determine variance of a type
 parameter, we only need to concern ourselves with interactions that
 involve at least two distinct objects (i.e. one object accessing or
-calling a member of another object). The same reasoning applies to
+calling a member of another object). The same exception applies to
 the types of class parameters that are not members of the class
 (i.e. class parameters that are not declared with `var` or `val`).
 
